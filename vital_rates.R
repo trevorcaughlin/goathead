@@ -48,6 +48,17 @@ fruity=trte[-which(is.na(trte$fruitt1)==T),]
 
 mfru<-stan_glmer.nb(fruitt1~s1+(1|Location),data=fruity)
 
+fruity$repro<-ifelse(fruity$fruitt1>0,1,0)
+
+mrepro<-stan_glmer(repro~s1+(1|Location),data=fruity,family="binomial")
+
+repre=-(-9.3/1.9)
+#4.894737
+
+curve(plogis(-9.3+1.9*x),from=-2,to=10)
+abline(v=4.894737)
+#now draw a circle
+
 #mfru2<-stan_glmer.nb(fruitt1~s1+(s1|Location),data=fruity)
 loo(mfru)
 loo(mfru2)
@@ -117,3 +128,54 @@ s_axiom_big=posterior_predict(msur_s,newdata=data.frame(s1=m3,Location=levels(tr
 save(msur_s,file="best_survival.Rdata")
 save(mfru,file="best_fruit.Rdata")
 save(msite,file="best_growth.Rdata")
+
+###
+###
+##
+##
+##
+##
+##
+##
+##
+#growth
+#appropriate to use for fruit, maybe not for others
+g_overland_small=posterior_predict(msite,newdata=data.frame(s1=m1,Location=levels(trte$Location)[7]))
+g_overland_medium=posterior_predict(msite,newdata=data.frame(s1=m2,Location=levels(trte$Location)[7]))
+g_overland_big=posterior_predict(msite,newdata=data.frame(s1=m3,Location=levels(trte$Location)[7]))
+
+#draws #draws #draws
+#for game purposes, I think it is fine to note include zeros in these draws
+#appropriate to use for fruit, maybe not for others
+g_axiom_small=posterior_predict(msite,newdata=data.frame(s1=m1,Location=levels(trte$Location)[2]))
+g_axiom_medium=posterior_predict(msite,newdata=data.frame(s1=m2,Location=levels(trte$Location)[2]))
+g_axiom_big=posterior_predict(msite,newdata=data.frame(s1=m3,Location=levels(trte$Location)[2]))
+
+
+axiom_small_all<-data.frame(vital_rates=c(s_axiom_small,g_axiom_small,f_axiom_small),
+           type=as.factor(rep(c("Survival","Growth","Fruit production"),each=4000)))
+
+
+axiom_medium_all<-data.frame(vital_rates=c(s_axiom_medium,g_axiom_medium,f_axiom_medium),
+                            type=as.factor(rep(c("Survival","Growth","Fruit production"),each=4000)))
+
+
+axiom_big_all<-data.frame(vital_rates=c(s_axiom_big,g_axiom_big,f_axiom_big),
+                            type=as.factor(rep(c("Survival","Growth","Fruit production"),each=4000)))
+
+
+#####
+#####
+
+overland_small_all<-data.frame(vital_rates=c(s_overland_small,g_overland_small,f_overland_small),
+                            type=as.factor(rep(c("Survival","Growth","Fruit production"),each=4000)))
+
+
+overland_medium_all<-data.frame(vital_rates=c(s_overland_medium,g_overland_medium,f_overland_medium),
+                             type=as.factor(rep(c("Survival","Growth","Fruit production"),each=4000)))
+
+
+overland_big_all<-data.frame(vital_rates=c(s_overland_big,g_overland_big,f_overland_big),
+                          type=as.factor(rep(c("Survival","Growth","Fruit production"),each=4000)))
+
+
